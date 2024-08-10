@@ -1,0 +1,120 @@
+
+************************DOCKER COMMANDS************************
+-Show all containers:
+docker ps -a 
+
+-Build and start all containers defined inside the selected yaml file:
+docker compose -f compose.yml up -d
+
+-Remove all containers defined inside the selected yaml file:
+docker compose -f compose.yml down
+
+-Start or stop:
+docker compose -f compose.yml   start 
+docker compose -f compose.yml   stop 
+
+
+************************KAFKA DOCKER COMMANDS************************
+docker run --name zookeeper  -p 2181:2181 -d wurstmeister/zookeeper 
+
+docker run -p 9092:9092 --name kafka  -e KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181 -e KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092  -e KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092-e KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT-d wurstmeister/kafka
+
+docker start zookeeper
+docker start kafka
+
+
+-Create topic:
+docker exec -it kafka /opt/kafka/bin/kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1 --topic events
+
+-List topics:
+docker exec -it kafka  /opt/kafka/bin/kafka-topics.sh --list --zookeeper zookeeper:2181
+ 
+-Recieve msg: 
+docker exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server kafka:9092 --topic events --from-beginning
+
+-Send msg:
+docker exec -it kafka /opt/kafka/bin/kafka-console-producer.sh --broker-list kafka:9092 --topic events
+
+-Delete topic:
+docker exec -it kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092  --delete --topic events
+
+
+docker start 123completedevents-producer-1
+
+************************MONGO DOCKER COMMANDS************************
+docker run -d -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=mypass --network mongo-network --name mongo mongo = create and run a container with mongodb in it
+
+docker start mongo 
+
+-Excute mongo cli:
+docker exec -it mongo mongosh
+
+-Go to a db or create if doesnt exist : 
+use eventsDb
+
+-Show all databases: 
+show dbs
+
+-Create collection: 
+db.createCollection("events")
+
+-Show all collections in db: 
+show collections 
+
+-Find: 
+db.events.find()
+
+-Delete collection: 
+db.events.drop()
+
+
+docker start 123completedevents-consumer-1
+
+Misc:
+-Delete a db:  *must be inside the db 
+db.dropDatabase() 
+
+-Insert one:  
+example:  db.events.insertOne({data:"stuff"})
+
+-Insert many:  
+example:  db.events.insertMany ([{data:"stuff1"},{data:"stuff2"}]) 
+
+-Update one:   
+example:  db.events.updateOne({data:"stuff2"},{$set:{data:"stuff3"}})
+
+-Update many:   
+example: db.events.updateMany({data:"stuff"},{$set:{data:"updated"}})
+
+-Delete one :  
+example: db.events.deleteOne({data:"stuff"})
+
+-Delete many : 
+example: db.events.deleteMany({data:"stuff"})
+
+-Find: 
+db.events.find({data:"stuff"})
+
+
+************************REDIS DOCKER COMMANDS************************
+docker start redis
+
+docker exec -it redis redis-cli
+
+-Show all keys: 
+KEYS *
+
+-SET: 
+SET key1 "msg"
+
+-GET:
+ GET key1
+
+-DEL: 
+DEL key1
+
+-CLEARALL: 
+FLUSHDB
+
+docker start 123completedevents-etl-1
+docker stop 123completedevents-etl-1
