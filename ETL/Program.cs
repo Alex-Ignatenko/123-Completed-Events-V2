@@ -103,7 +103,7 @@ class Program
         {
             Console.WriteLine($"Received from mongo: {doc}");
 
-            string convertedTimestamp = DateTime.Parse(doc["Timestamp"].ToString()!).ToString(configReader.TimeFormatKey);
+            string convertedTimestamp = doc["Timestamp"].AsDateTime.ToUniversalTime().ToString(configReader.TimeFormatKey);
             string redisKey = doc["ReporterId"].ToString() + ":" + convertedTimestamp;
             
             // Add the key-value pair to the dictionary
